@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>座位查詢系統｜2026TIFA 拉貝克姊妹：菲利普．葛拉斯《考克多三部曲》</title>
+<title>座位查詢系統｜國家兩廳院</title>
 <link rel="icon" type="image/png" href="logo-無字.png">
 <style>
 :root {
@@ -29,52 +29,84 @@ body {
   align-items: center;
 }
 
-.top-band {
-  width: 100%;
-  background: var(--red);
-  height: 5px;
-  flex-shrink: 0;
-}
+.top-band { width: 100%; background: var(--red); height: 5px; flex-shrink: 0; }
 
 .page { display: none; width: 100%; max-width: 480px; padding: 36px 20px 24px; flex-grow: 1; }
+.page.wide { max-width: 800px; }
 .page.active { display: flex; flex-direction: column; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 .page.active { animation: fadeIn 0.3s ease; }
 
 /* Logo & 標題 */
 .venue-header { text-align: center; margin-bottom: 32px; }
-.logo-wrap {
-  display: flex; justify-content: center; align-items: center;
-  margin-bottom: 18px;
-}
-.logo-wrap img {
-  display: block;
-  height: 44px;
-  width: auto;
-  object-fit: contain;
-  object-position: center;
-}
-.venue-eyebrow {
-  font-size: 12px; font-weight: 600; color: var(--red);
-  letter-spacing: 0.08em; line-height: 1.6; margin-bottom: 8px;
-}
-.venue-title {
-  font-size: clamp(26px, 6vw, 38px); font-weight: 300;
-  color: var(--ink); letter-spacing: -0.01em; margin-bottom: 6px;
-}
+.logo-wrap { display: flex; justify-content: center; align-items: center; margin-bottom: 18px; }
+.logo-wrap img { display: block; height: 44px; width: auto; object-fit: contain; object-position: center; }
+.venue-eyebrow { font-size: 12px; font-weight: 600; color: var(--red); letter-spacing: 0.08em; line-height: 1.6; margin-bottom: 8px; }
+.venue-title { font-size: clamp(26px, 6vw, 38px); font-weight: 300; color: var(--ink); letter-spacing: -0.01em; margin-bottom: 6px; }
 .venue-sub { font-size: 13px; color: var(--muted); }
 
-/* 卡片 */
-.card {
-  background: var(--bg); border: 1px solid var(--border);
-  padding: 28px 24px; border-radius: 3px;
+/* 卡片（一般容器） */
+.card { background: var(--bg); border: 1px solid var(--border); padding: 28px 24px; border-radius: 3px; }
+
+/* 節目選擇卡片格 */
+.show-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+@media (max-width: 700px) {
+  .show-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.show-card {
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  padding: 22px 14px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px;
+  line-height: 1.5;
+}
+.show-card:hover, .show-card:focus-visible { border-color: var(--red); background: #fff; color: var(--red); outline: none; }
+
+/* 無節目時的提示 */
+.empty-notice { text-align: center; padding: 40px 10px; }
+.empty-notice .headline { font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 18px; }
+.empty-notice .subline { font-size: 14px; color: var(--muted); line-height: 1.8; }
+.empty-notice .phone { font-size: 20px; font-weight: 700; color: var(--red); margin-top: 4px; }
+
+/* 場次選擇 */
+.select-label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+.show-select {
+  width: 100%; padding: 14px 16px; font-size: 15px;
+  font-family: inherit; border: 1.5px solid var(--border);
+  border-radius: 2px; background: var(--surface); color: var(--ink);
+  margin-bottom: 20px; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23767676' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.show-select:focus { outline: none; border-color: var(--red); background-color: #fff; }
+
+/* 已選節目/場次標籤 */
+.show-badge {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  color: var(--red); letter-spacing: 0.06em;
+  border: 1px solid var(--red); border-radius: 2px;
+  padding: 3px 8px; margin-bottom: 20px;
 }
 
 /* 座位輸入 */
-.seat-input-row {
-  display: flex; justify-content: center; align-items: flex-end;
-  gap: 0; margin-bottom: 22px;
-}
+.seat-input-row { display: flex; justify-content: center; align-items: flex-end; gap: 0; margin-bottom: 22px; }
 .seat-field { display: flex; flex-direction: column; align-items: center; flex: 1; }
 
 input[type=number] { -moz-appearance: textfield; appearance: textfield; }
@@ -91,172 +123,92 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
 }
 .seat-num-input:focus { outline: none; border-color: var(--red); background: #fff; }
 
-.seat-field-label {
-  display: block; margin-top: 6px; font-size: 12px;
-  font-weight: 600; color: var(--muted); letter-spacing: 0.05em;
-}
-.seat-sep {
-  font-size: 20px; color: var(--border);
-  padding: 0 6px; padding-bottom: 28px; flex-shrink: 0;
-}
+.seat-field-label { display: block; margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; }
+.seat-sep { font-size: 20px; color: var(--border); padding: 0 6px; padding-bottom: 28px; flex-shrink: 0; }
 
 /* 按鈕 */
-.btn {
-  display: block; width: 100%; padding: 15px;
-  font-family: inherit; font-size: 15px; font-weight: 600;
-  letter-spacing: 0.06em; cursor: pointer; border: none;
-  border-radius: 2px; transition: background 0.15s, color 0.15s;
-}
+.btn { display: block; width: 100%; padding: 15px; font-family: inherit; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; border: none; border-radius: 2px; transition: background 0.15s, color 0.15s; }
 .btn-primary { background: var(--red); color: #fff; }
 .btn-primary:hover { background: var(--red-dark); }
-.btn-ghost {
-  background: transparent; border: 1.5px solid var(--border);
-  color: var(--muted); margin-top: 10px;
-}
+.btn-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--muted); margin-top: 10px; }
 .btn-ghost:hover { border-color: var(--text); color: var(--text); }
 
 /* 結果 */
-.result-box {
-  margin-top: 20px; padding: 22px 20px;
-  border: 1.5px solid var(--red); background: #fff;
-  text-align: center; border-radius: 2px;
-}
-.result-label {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
-  color: var(--red); text-transform: uppercase; margin-bottom: 10px;
-}
-.result-seat {
-  font-size: clamp(28px, 8vw, 40px); font-weight: 300;
-  color: var(--ink); line-height: 1.2;
-}
+.result-box { margin-top: 20px; padding: 22px 20px; border: 1.5px solid var(--red); background: #fff; text-align: center; border-radius: 2px; }
+.result-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: var(--red); text-transform: uppercase; margin-bottom: 10px; }
+.result-seat { font-size: clamp(28px, 8vw, 40px); font-weight: 300; color: var(--ink); line-height: 1.2; }
 .result-seat b { font-weight: 700; color: var(--red); }
 
-.reminder-box {
-  margin-top: 14px; padding: 14px 16px; background: var(--surface);
-  border-left: 3px solid var(--red); border-radius: 0 2px 2px 0; text-align: left;
-}
+.reminder-box { margin-top: 14px; padding: 14px 16px; background: var(--surface); border-left: 3px solid var(--red); border-radius: 0 2px 2px 0; text-align: left; }
 .reminder-title { font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 4px; }
 .reminder-text { font-size: 13px; color: var(--text); line-height: 1.55; }
 
-.error-box {
-  margin-top: 16px; padding: 14px 16px; background: #fff5f5;
-  border: 1px solid #f0c0c0; color: #c0392b;
-  font-size: 14px; text-align: center; border-radius: 2px;
-}
+.error-box { margin-top: 16px; padding: 14px 16px; background: #fff5f5; border: 1px solid #f0c0c0; color: #c0392b; font-size: 14px; text-align: center; border-radius: 2px; }
 .loading-box { text-align: center; padding: 20px; color: var(--muted); font-size: 14px; }
 
-/* 工作人員入口連結 */
-.staff-link {
-  text-align: center; margin-top: 28px; font-size: 11px;
-  color: var(--border); cursor: pointer; user-select: none;
-  letter-spacing: 0.05em; transition: color 0.15s;
-}
-.staff-link:hover { color: var(--muted); }
-
-/* 工作人員登入 */
-.pw-title {
-  font-size: 13px; font-weight: 600; color: var(--muted);
-  letter-spacing: 0.08em; text-align: center; margin-bottom: 18px;
-  text-transform: uppercase;
-}
-.pw-input {
-  width: 100%; padding: 13px 14px; font-size: 15px;
-  font-family: inherit; border: 1.5px solid var(--border);
-  border-radius: 2px; background: var(--surface); color: var(--ink);
-  margin-bottom: 12px; transition: border-color 0.15s;
-}
-.pw-input:focus { outline: none; border-color: var(--red); background: #fff; }
-
-/* 工作人員查詢頁 */
-.admin-header {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-  color: var(--muted); text-align: center; text-transform: uppercase;
-  margin-bottom: 16px;
-}
-.admin-row { display: flex; gap: 8px; margin-bottom: 12px; }
-.admin-input {
-  flex: 1; padding: 14px 6px; font-size: 22px; font-weight: 600;
-  font-family: inherit; text-align: center;
-  border: 1.5px solid var(--border); border-radius: 2px;
-  background: var(--surface); color: var(--ink); min-width: 0;
-  transition: border-color 0.15s, background 0.15s;
-}
-.admin-input:focus { outline: none; border-color: var(--red); background: #fff; }
-.admin-input::placeholder { color: var(--border); font-size: 14px; font-weight: 400; }
-
-#admin-result-area .result-box { padding: 18px; }
-#admin-result-area .result-seat { font-size: clamp(30px, 9vw, 44px); }
-
-/* 最近搜尋 */
-.history-section {
-  margin-top: 20px;
-}
-.history-title {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-  color: var(--muted); text-transform: uppercase; margin-bottom: 8px;
-  padding-bottom: 6px; border-bottom: 1px solid var(--border);
-}
-.history-list { list-style: none; }
-.history-item {
-  display: grid;
-  grid-template-columns: 68px 1fr auto;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--surface);
-  font-size: 13px;
-  line-height: 1.3;
-}
-.history-item:last-child { border-bottom: none; }
-.history-time { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.history-old { color: var(--muted); }
-.history-arrow { color: var(--border); margin: 0 2px; }
-.history-new { color: var(--ink); font-weight: 600; }
-.history-new b { color: var(--red); }
-.history-empty { font-size: 12px; color: var(--border); text-align: center; padding: 12px 0; }
-
 /* 頁尾 */
-footer {
-  text-align: center; padding: 20px 20px 28px; font-size: 11px;
-  color: var(--border); line-height: 1.7; margin-top: auto;
-  width: 100%; letter-spacing: 0.03em;
-}
+footer { text-align: center; padding: 20px 20px 28px; font-size: 11px; color: var(--border); line-height: 1.7; margin-top: auto; width: 100%; letter-spacing: 0.03em; }
+
+.back-link { text-align: center; margin-top: 20px; font-size: 12px; color: var(--muted); cursor: pointer; user-select: none; letter-spacing: 0.03em; transition: color 0.15s; }
+.back-link:hover { color: var(--text); }
 
 @media (max-width: 400px) {
   .card { padding: 22px 16px; }
   .seat-num-input { font-size: 24px; padding: 12px 4px; }
   .seat-sep { padding-bottom: 26px; }
   .logo-wrap img { height: 36px; }
-  .history-item { grid-template-columns: 60px 1fr; font-size: 12px; }
-  .history-new { grid-column: 2 / -1; }
 }
 </style>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-120RN6HLJC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-120RN6HLJC');
-</script>
 </head>
 <body>
 
 <div class="top-band"></div>
 
-<!-- 觀眾查詢頁 -->
-<div class="page active" id="page-lookup">
+<!-- ① 節目選擇頁 -->
+<div class="page wide active" id="page-shows">
   <header class="venue-header">
-    <div class="logo-wrap">
-      <img src="logo-RB-s.png" alt="國家兩廳院">
-    </div>
-    <p class="venue-eyebrow">2026TIFA｜拉貝克姊妹：菲利普．葛拉斯《考克多三部曲》</p>
+    <div class="logo-wrap"><img src="logo-RB-s.png" alt="國家兩廳院"></div>
+    <p class="venue-eyebrow">國家兩廳院｜座位異動查詢</p>
     <h1 class="venue-title">座位查詢</h1>
-    <p class="venue-sub">請輸入您的原始座位號碼</p>
+    <p class="venue-sub" id="shows-subtitle">請選擇您觀看的節目</p>
+  </header>
+
+  <div id="shows-content">
+    <div class="loading-box">載入節目資訊中⋯</div>
+  </div>
+</div>
+
+<!-- ② 場次選擇頁 -->
+<div class="page" id="page-sessions">
+  <header class="venue-header">
+    <div class="logo-wrap"><img src="logo-RB-s.png" alt="國家兩廳院"></div>
+    <p class="venue-eyebrow" id="sessions-show-name">—</p>
+    <h1 class="venue-title">座位查詢</h1>
+    <p class="venue-sub">請選擇您的演出場次</p>
   </header>
 
   <div class="card">
+    <label class="select-label" for="session-select">演出場次</label>
+    <select class="show-select" id="session-select">
+      <option value="" disabled selected>請選擇場次⋯</option>
+    </select>
+    <button class="btn btn-primary" onclick="confirmSession()">確認場次</button>
+  </div>
+
+  <p class="back-link" onclick="showPage('shows')">← 重新選擇節目</p>
+</div>
+
+<!-- ③ 座位輸入 / 查詢結果頁 -->
+<div class="page" id="page-lookup">
+  <header class="venue-header">
+    <div class="logo-wrap"><img src="logo-RB-s.png" alt="國家兩廳院"></div>
+    <p class="venue-eyebrow" id="lookup-show-name">—</p>
+    <h1 class="venue-title">座位查詢</h1>
+  </header>
+
+  <div class="card">
+    <div id="lookup-show-badge" class="show-badge"></div>
+    <p class="venue-sub" style="margin-bottom:20px;">請輸入您的原始座位號碼</p>
     <div class="seat-input-row">
       <div class="seat-field">
         <input class="seat-num-input" type="number" id="input-floor" inputmode="numeric" placeholder="—">
@@ -264,7 +216,7 @@ footer {
       </div>
       <span class="seat-sep">—</span>
       <div class="seat-field">
-        <input class="seat-num-input" type="number" id="input-row" inputmode="numeric" placeholder="—">
+        <input class="seat-num-input" type="text" id="input-row" inputmode="text" placeholder="—" autocomplete="off" autocorrect="off" autocapitalize="characters">
         <span class="seat-field-label">排</span>
       </div>
       <span class="seat-sep">—</span>
@@ -277,45 +229,7 @@ footer {
     <div id="result-area"></div>
   </div>
 
-  <p class="staff-link" onclick="showPage('pw')">工作人員入口</p>
-</div>
-
-<!-- 工作人員登入頁 -->
-<div class="page" id="page-pw">
-  <div class="card" style="margin-top: 60px;">
-    <p class="pw-title">工作人員登入</p>
-    <input type="password" id="pw-input" class="pw-input" placeholder="請輸入密碼"
-      onkeydown="if(event.key==='Enter') verifyPw()">
-    <button class="btn btn-primary" onclick="verifyPw()">登入</button>
-    <button class="btn btn-ghost" onclick="showPage('lookup')">返回</button>
-  </div>
-</div>
-
-<!-- 工作人員查詢頁 -->
-<div class="page" id="page-admin">
-  <div class="card">
-    <p class="admin-header">工作人員查詢</p>
-    <div class="admin-row">
-      <input type="number" id="admin-floor" class="admin-input" placeholder="樓" inputmode="numeric"
-        onkeydown="if(event.key==='Enter') doAdminSeatLookup()">
-      <input type="number" id="admin-row-input" class="admin-input" placeholder="排" inputmode="numeric"
-        onkeydown="if(event.key==='Enter') doAdminSeatLookup()">
-      <input type="number" id="admin-num" class="admin-input" placeholder="號" inputmode="numeric"
-        onkeydown="if(event.key==='Enter') doAdminSeatLookup()">
-    </div>
-    <button class="btn btn-primary" onclick="doAdminSeatLookup()">查詢</button>
-    <div id="admin-result-area"></div>
-
-    <!-- 最近搜尋 -->
-    <div class="history-section">
-      <p class="history-title">最近搜尋</p>
-      <ul class="history-list" id="history-list">
-        <li class="history-empty">尚無搜尋紀錄</li>
-      </ul>
-    </div>
-
-    <button class="btn btn-ghost" onclick="showPage('lookup')" style="margin-top:16px;">登出</button>
-  </div>
+  <p class="back-link" onclick="showPage('sessions')">← 重新選擇場次</p>
 </div>
 
 <footer>
@@ -324,46 +238,12 @@ footer {
 </footer>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbyX4sISeUNuDOWwTOJ1XOyKaMAQubXaGCyUFWs9eQvUE8XRKhdnOPfkQuBrUsFvJOBPtw/exec';
+/* ====== 請將下方網址換成 Apps Script 部署後的 Web App 網址 ====== */
+const API_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
 
-// 搜尋紀錄（最多5筆，存於記憶體）
-const searchHistory = [];
-
-function nowHMS() {
-  const d = new Date();
-  const pad = n => String(n).padStart(2, '0');
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
-
-function addHistory(oldFloor, oldRow, oldNum, res) {
-  if (!res.success) return;
-  const entry = {
-    time: nowHMS(),
-    old: `${oldFloor}樓${oldRow}排${oldNum}號`,
-    newSeat: res.newSeat
-  };
-  searchHistory.unshift(entry);
-  if (searchHistory.length > 5) searchHistory.pop();
-  renderHistory();
-}
-
-function renderHistory() {
-  const ul = document.getElementById('history-list');
-  if (searchHistory.length === 0) {
-    ul.innerHTML = '<li class="history-empty">尚無搜尋紀錄</li>';
-    return;
-  }
-  ul.innerHTML = searchHistory.map(e => `
-    <li class="history-item">
-      <span class="history-time">${e.time}</span>
-      <span>
-        <span class="history-old">${e.old}</span>
-        <span class="history-arrow">→</span>
-        <span class="history-new"><b>${e.newSeat.floor}</b>樓 <b>${e.newSeat.row}</b>排 <b>${e.newSeat.num}</b>號</span>
-      </span>
-    </li>
-  `).join('');
-}
+let showsData = [];      // [{showName, sessions:[{tabName,label}]}]
+let selectedShow = '';
+let selectedSession = null; // {tabName, label}
 
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -380,26 +260,101 @@ async function callApi(params) {
   return await response.json();
 }
 
-function resultHTML(res, isAdmin) {
-  if (res.success) {
-    const seatHTML = `
-      <div class="result-box">
-        <p class="result-label">新座位</p>
-        <div class="result-seat">
-          <b>${res.newSeat.floor}</b> 樓&nbsp;
-          <b>${res.newSeat.row}</b> 排&nbsp;
-          <b>${res.newSeat.num}</b> 號
-        </div>
-      </div>`;
-    if (isAdmin) return seatHTML;
-    return seatHTML + `
-      <div class="reminder-box">
-        <p class="reminder-title">📣 小提醒</p>
-        <p class="reminder-text">請先截圖留存此畫面，方便入場時快速找尋座位。</p>
-        <p class="reminder-text"><b>請持「舊票券驗票入場」，入座於「新座位」。</b></p>
-      </div>`;
+/* ---------- ① 節目卡片 ---------- */
+
+async function loadShows() {
+  const content = document.getElementById('shows-content');
+  try {
+    const res = await callApi({ action: 'getShows' });
+    if (!res.success) throw new Error(res.message || '讀取失敗');
+    showsData = res.shows || [];
+    renderShows();
+  } catch (e) {
+    content.innerHTML = '<div class="error-box">節目資訊載入失敗，請重新整理頁面再試</div>';
   }
-  return `<div class="error-box">${res.message}</div>`;
+}
+
+function renderShows() {
+  const content = document.getElementById('shows-content');
+  const subtitle = document.getElementById('shows-subtitle');
+
+  if (!showsData || showsData.length === 0) {
+    subtitle.textContent = '';
+    content.innerHTML = `
+      <div class="empty-notice">
+        <p class="headline">近期無需換位之演出節目</p>
+        <p class="subline">如有問題，請致電兩廳院客服</p>
+        <p class="phone">02-3393-9999</p>
+      </div>`;
+    return;
+  }
+
+  subtitle.textContent = '請選擇您觀看的節目';
+  content.innerHTML = `
+    <div class="show-grid">
+      ${showsData.map((s, i) => `
+        <div class="show-card" tabindex="0" role="button"
+          onclick="selectShow(${i})"
+          onkeydown="if(event.key==='Enter'){selectShow(${i})}">
+          ${escapeHtml(s.showName)}
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function selectShow(index) {
+  const show = showsData[index];
+  selectedShow = show.showName;
+  document.getElementById('sessions-show-name').textContent = show.showName;
+
+  const select = document.getElementById('session-select');
+  select.innerHTML = '<option value="" disabled selected>請選擇場次⋯</option>' +
+    show.sessions.map((s, i) => `<option value="${i}">${escapeHtml(s.label)}</option>`).join('');
+
+  showPage('sessions');
+}
+
+/* ---------- ② 場次選擇 ---------- */
+
+function confirmSession() {
+  const select = document.getElementById('session-select');
+  const idx = select.value;
+  if (idx === '') {
+    alert('請先選擇演出場次');
+    return;
+  }
+  const show = showsData.find(s => s.showName === selectedShow);
+  selectedSession = show.sessions[idx];
+
+  document.getElementById('lookup-show-name').textContent = selectedShow;
+  document.getElementById('lookup-show-badge').textContent = selectedSession.label;
+
+  document.getElementById('result-area').innerHTML = '';
+  ['input-floor', 'input-row', 'input-num'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  showPage('lookup');
+}
+
+/* ---------- ③ 座位查詢 ---------- */
+
+function resultHTML(res) {
+  if (!res.success) return '';
+  return `
+    <div class="result-box">
+      <p class="result-label">新座位</p>
+      <div class="result-seat">
+        <b>${res.newSeat.floor}</b> 樓&nbsp;
+        <b>${res.newSeat.row}</b> 排&nbsp;
+        <b>${res.newSeat.num}</b> 號
+      </div>
+    </div>
+    <div class="reminder-box">
+      <p class="reminder-title">📣 小提醒</p>
+      <p class="reminder-text">請先截圖留存此畫面，方便入場時快速找尋座位。</p>
+      <p class="reminder-text"><b>請持「舊票券驗票入場」，入座於「新座位」。</b></p>
+    </div>`;
 }
 
 async function doLookup() {
@@ -408,48 +363,35 @@ async function doLookup() {
   const num   = document.getElementById('input-num').value.trim();
   const area  = document.getElementById('result-area');
 
+  if (!selectedSession) {
+    area.innerHTML = '<div class="error-box">請先選擇場次</div>';
+    return;
+  }
   if (!floor || !row || !num) {
     area.innerHTML = '<div class="error-box">請輸入完整的樓、排、號資訊</div>';
     return;
   }
   area.innerHTML = '<div class="loading-box">查詢中⋯</div>';
   try {
-    const res = await callApi({ action: 'lookupBySeat', floor, row, num });
-    area.innerHTML = resultHTML(res, false);
+    const res = await callApi({ action: 'lookupBySeat', tab: selectedSession.tabName, floor, row, num });
+    if (res.success) {
+      area.innerHTML = resultHTML(res);
+    } else {
+      area.innerHTML = '<div class="error-box"></div>';
+      area.querySelector('.error-box').textContent = res.message;
+    }
   } catch (e) {
     area.innerHTML = '<div class="error-box">連線失敗，請確認網路後再試</div>';
   }
 }
 
-function verifyPw() {
-  const pw = document.getElementById('pw-input').value;
-  if (pw === 'tifa2026') {
-    document.getElementById('pw-input').value = '';
-    showPage('admin');
-  } else {
-    alert('密碼錯誤');
-  }
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
 }
 
-async function doAdminSeatLookup() {
-  const floor = document.getElementById('admin-floor').value.trim();
-  const row   = document.getElementById('admin-row-input').value.trim();
-  const num   = document.getElementById('admin-num').value.trim();
-  const area  = document.getElementById('admin-result-area');
-
-  if (!floor || !row || !num) {
-    area.innerHTML = '<div class="error-box" style="margin-top:12px;">請輸入完整資訊</div>';
-    return;
-  }
-  area.innerHTML = '<div class="loading-box">查詢中⋯</div>';
-  try {
-    const res = await callApi({ action: 'lookupBySeat', floor, row, num });
-    area.innerHTML = resultHTML(res, true);
-    addHistory(floor, row, num, res);
-  } catch (e) {
-    area.innerHTML = '<div class="error-box" style="margin-top:12px;">連線失敗，請重試</div>';
-  }
-}
+loadShows();
 </script>
 </body>
 </html>
