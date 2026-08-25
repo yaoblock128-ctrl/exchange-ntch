@@ -48,16 +48,16 @@ body {
 /* 卡片（一般容器） */
 .card { background: var(--bg); border: 1px solid var(--border); padding: 28px 24px; border-radius: 3px; }
 
-/* 節目選擇卡片格 */
+/* 節目選擇卡片格：自適應排列，依卡片數量置中並自然換行（電腦版最多4欄） */
 .show-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 14px;
 }
-@media (max-width: 700px) {
-  .show-grid { grid-template-columns: repeat(2, 1fr); }
-}
 .show-card {
+  flex: 1 1 160px;
+  max-width: 200px;
   border: 1.5px solid var(--border);
   border-radius: 3px;
   padding: 22px 14px;
@@ -75,6 +75,21 @@ body {
   line-height: 1.5;
 }
 .show-card:hover, .show-card:focus-visible { border-color: var(--red); background: #fff; color: var(--red); outline: none; }
+
+/* 只有一檔節目時：置中且卡片放大 */
+.show-grid.single { max-width: 360px; margin: 0 auto; }
+.show-grid.single .show-card {
+  flex: 1 1 100%;
+  max-width: 100%;
+  min-height: 124px;
+  font-size: 17px;
+  padding: 30px 20px;
+}
+
+@media (max-width: 700px) {
+  .show-card { flex-basis: 44%; }
+  .show-grid.single .show-card { flex-basis: 100%; min-height: 110px; font-size: 16px; }
+}
 
 /* 無節目時的提示 */
 .empty-notice { text-align: center; padding: 40px 10px; }
@@ -239,7 +254,7 @@ footer { text-align: center; padding: 20px 20px 28px; font-size: 11px; color: va
 
 <script>
 /* ====== 請將下方網址換成 Apps Script 部署後的 Web App 網址 ====== */
-const API_URL = 'https://script.google.com/macros/s/AKfycbxvNWCIjQX1A7lNLpbXFF4CR-jqmjYvvhksOPi6zwGIXYRodLsGqNvw37tw3oTilsMP/exec';
+const API_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
 
 let showsData = [];      // [{showName, sessions:[{tabName,label}]}]
 let selectedShow = '';
@@ -290,8 +305,9 @@ function renderShows() {
   }
 
   subtitle.textContent = '請選擇您觀看的節目';
+  const singleClass = showsData.length === 1 ? ' single' : '';
   content.innerHTML = `
-    <div class="show-grid">
+    <div class="show-grid${singleClass}">
       ${showsData.map((s, i) => `
         <div class="show-card" tabindex="0" role="button"
           onclick="selectShow(${i})"
@@ -352,7 +368,7 @@ function resultHTML(res) {
     </div>
     <div class="reminder-box">
       <p class="reminder-title">📣 小提醒</p>
-      <p class="reminder-text">請先截圖留存此畫面，方便入場時快速找尋座位。</p>
+      <p class="reminder-text">請先截圖留存此畫面，方便入場時快速<span style="white-space:nowrap;">找尋座位。</span></p>
       <p class="reminder-text"><b>請持「舊票券驗票入場」，入座於「新座位」。</b></p>
     </div>`;
 }
