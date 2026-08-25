@@ -159,7 +159,13 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
 .reminder-text { font-size: 13px; color: var(--text); line-height: 1.55; }
 
 .error-box { margin-top: 16px; padding: 14px 16px; background: #fff5f5; border: 1px solid #f0c0c0; color: #c0392b; font-size: 14px; text-align: center; border-radius: 2px; }
-.loading-box { text-align: center; padding: 20px; color: var(--muted); font-size: 14px; }
+.loading-box { text-align: center; padding: 34px 10px; color: var(--muted); font-size: 14px; }
+.spinner {
+  width: 30px; height: 30px; margin: 0 auto 14px;
+  border: 3px solid var(--border); border-top-color: var(--red);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* 頁尾 */
 footer { text-align: center; padding: 20px 20px 28px; font-size: 11px; color: var(--border); line-height: 1.7; margin-top: auto; width: 100%; letter-spacing: 0.03em; }
@@ -189,7 +195,7 @@ footer { text-align: center; padding: 20px 20px 28px; font-size: 11px; color: va
   </header>
 
   <div id="shows-content">
-    <div class="loading-box">載入節目資訊中⋯</div>
+    <div class="loading-box"><div class="spinner"></div>載入節目資訊中⋯</div>
   </div>
 </div>
 
@@ -254,7 +260,7 @@ footer { text-align: center; padding: 20px 20px 28px; font-size: 11px; color: va
 
 <script>
 /* ====== 請將下方網址換成 Apps Script 部署後的 Web App 網址 ====== */
-const API_URL = 'https://script.google.com/macros/s/AKfycbwhfLSn8dvNmFdP__FM9i7MSLYJfpV_FY8xiLamLUy45sTFSYD6wUhsfB8L7iG-c3vh/exec';
+const API_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
 
 let showsData = [];      // [{showName, sessions:[{tabName,label}]}]
 let selectedShow = '';
@@ -279,6 +285,7 @@ async function callApi(params) {
 
 async function loadShows() {
   const content = document.getElementById('shows-content');
+  content.innerHTML = '<div class="loading-box"><div class="spinner"></div>載入節目資訊中⋯</div>';
   try {
     const res = await callApi({ action: 'getShows' });
     if (!res.success) throw new Error(res.message || '讀取失敗');
@@ -368,7 +375,7 @@ function resultHTML(res) {
     </div>
     <div class="reminder-box">
       <p class="reminder-title">📣 小提醒</p>
-      <p class="reminder-text">請先截圖留存此畫面，方便入場時快速<span style="white-space:nowrap;">找尋座位。</span></p>
+      <p class="reminder-text">請先截圖留存此畫面，方便入場時快速找尋座位。</span></p>
       <p class="reminder-text"><b>請持「舊票券驗票入場」，入座於「新座位」。</b></p>
     </div>`;
 }
@@ -387,7 +394,7 @@ async function doLookup() {
     area.innerHTML = '<div class="error-box">請輸入完整的樓、排、號資訊</div>';
     return;
   }
-  area.innerHTML = '<div class="loading-box">查詢中⋯</div>';
+  area.innerHTML = '<div class="loading-box"><div class="spinner"></div>查詢中⋯</div>';
   try {
     const res = await callApi({ action: 'lookupBySeat', tab: selectedSession.tabName, floor, row, num });
     if (res.success) {
