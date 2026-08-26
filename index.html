@@ -19,6 +19,8 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body { overflow-x: hidden; width: 100%; }
+
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: var(--bg);
@@ -39,8 +41,8 @@ body {
 
 /* Logo & 標題 */
 .venue-header { text-align: center; margin-bottom: 32px; }
-.logo-wrap { display: flex; justify-content: center; align-items: center; margin-bottom: 18px; }
-.logo-wrap img { display: block; height: 44px; width: auto; object-fit: contain; object-position: center; }
+.logo-wrap { display: flex; justify-content: center; align-items: center; margin-bottom: 18px; overflow: hidden; width: 100%; }
+.logo-wrap img { display: block; max-height: 44px; max-width: 100%; width: auto; height: auto; object-fit: contain; object-position: center; }
 .venue-eyebrow { font-size: 12px; font-weight: 600; color: var(--red); letter-spacing: 0.08em; line-height: 1.6; margin-bottom: 8px; }
 .venue-title { font-size: clamp(26px, 6vw, 38px); font-weight: 300; color: var(--ink); letter-spacing: -0.01em; margin-bottom: 6px; }
 .venue-sub { font-size: 13px; color: var(--muted); }
@@ -121,16 +123,16 @@ body {
 }
 
 /* 座位輸入 */
-.seat-input-row { display: flex; justify-content: center; align-items: flex-end; gap: 0; margin-bottom: 22px; }
-.seat-field { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.seat-input-row { display: flex; justify-content: center; align-items: flex-end; gap: 6px; margin-bottom: 22px; }
+.seat-field { display: flex; flex-direction: column; align-items: center; flex: 1 1 0; min-width: 0; max-width: 100px; }
 
 input[type=number] { -moz-appearance: textfield; appearance: textfield; }
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
 .seat-num-input {
-  width: 100%; max-width: 90px;
-  padding: 14px 6px; font-size: 28px; font-weight: 600;
+  width: 100%;
+  padding: 14px 4px; font-size: clamp(20px, 7vw, 28px); font-weight: 600;
   font-family: inherit; text-align: center;
   border: 1.5px solid var(--border); border-radius: 2px;
   background: var(--surface); color: var(--ink);
@@ -139,7 +141,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
 .seat-num-input:focus { outline: none; border-color: var(--red); background: #fff; }
 
 .seat-field-label { display: block; margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; }
-.seat-sep { font-size: 20px; color: var(--border); padding: 0 6px; padding-bottom: 28px; flex-shrink: 0; }
+.seat-sep { font-size: 18px; color: var(--border); padding: 0 2px; padding-bottom: 28px; flex-shrink: 0; }
 
 /* 按鈕 */
 .btn { display: block; width: 100%; padding: 15px; font-family: inherit; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; border: none; border-radius: 2px; transition: background 0.15s, color 0.15s; }
@@ -175,9 +177,8 @@ footer { text-align: center; padding: 20px 20px 28px; font-size: 11px; color: va
 
 @media (max-width: 400px) {
   .card { padding: 22px 16px; }
-  .seat-num-input { font-size: 24px; padding: 12px 4px; }
-  .seat-sep { padding-bottom: 26px; }
-  .logo-wrap img { height: 36px; }
+  .seat-sep { padding-bottom: 24px; }
+  .logo-wrap img { max-height: 36px; }
 }
 </style>
 </head>
@@ -375,7 +376,7 @@ function resultHTML(res) {
     </div>
     <div class="reminder-box">
       <p class="reminder-title">📣 小提醒</p>
-      <p class="reminder-text">請先截圖留存此畫面，方便入場時快速找尋座位。</span></p>
+      <p class="reminder-text">請先截圖留存此畫面，方便入場時快速<span style="white-space:nowrap;">找尋座位。</span></p>
       <p class="reminder-text"><b>請持「舊票券驗票入場」，入座於「新座位」。</b></p>
     </div>`;
 }
