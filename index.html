@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>座位查詢系統｜國家兩廳院</title>
 <link rel="icon" type="image/png" href="logo-無字.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#CB333B">
 <style>
 :root {
   --red: #CB333B;
@@ -147,6 +149,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
 .btn { display: block; width: 100%; padding: 15px; font-family: inherit; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; border: none; border-radius: 2px; transition: background 0.15s, color 0.15s; }
 .btn-primary { background: var(--red); color: #fff; }
 .btn-primary:hover { background: var(--red-dark); }
+.btn-primary:disabled { background: var(--border); color: #fff; cursor: not-allowed; }
 .btn-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--muted); margin-top: 10px; }
 .btn-ghost:hover { border-color: var(--text); color: var(--text); }
 
@@ -233,21 +236,21 @@ footer { text-align: center; padding: 20px 20px 28px; font-size: 11px; color: va
     <p class="venue-sub" style="margin-bottom:20px;">請輸入您的原始座位號碼</p>
     <div class="seat-input-row">
       <div class="seat-field">
-        <input class="seat-num-input" type="number" id="input-floor" inputmode="numeric" placeholder="—">
+        <input class="seat-num-input" type="number" id="input-floor" inputmode="numeric" placeholder="—" maxlength="2">
         <span class="seat-field-label">樓</span>
       </div>
       <span class="seat-sep">—</span>
       <div class="seat-field">
-        <input class="seat-num-input" type="text" id="input-row" inputmode="text" placeholder="—" autocomplete="off" autocorrect="off" autocapitalize="characters">
+        <input class="seat-num-input" type="text" id="input-row" inputmode="text" placeholder="—" autocomplete="off" autocorrect="off" autocapitalize="characters" maxlength="3">
         <span class="seat-field-label">排</span>
       </div>
       <span class="seat-sep">—</span>
       <div class="seat-field">
-        <input class="seat-num-input" type="number" id="input-num" inputmode="numeric" placeholder="—">
+        <input class="seat-num-input" type="number" id="input-num" inputmode="numeric" placeholder="—" maxlength="3">
         <span class="seat-field-label">號</span>
       </div>
     </div>
-    <button class="btn btn-primary" onclick="doLookup()">查詢新座位</button>
+    <button class="btn btn-primary" id="lookup-btn" onclick="doLookup()">查詢新座位</button>
     <div id="result-area"></div>
   </div>
 
@@ -376,16 +379,31 @@ function resultHTML(res) {
     </div>
     <div class="reminder-box">
       <p class="reminder-title">📣 小提醒</p>
-      <p class="reminder-text">請先截圖留存此畫面，方便入場時快速找尋座位。</span></p>
+      <p class="reminder-text">請先截圖留存此畫面，方便入場時快速<span style="white-space:nowrap;">找尋座位。</span></p>
       <p class="reminder-text"><b>請持「舊票券驗票入場」，入座於「新座位」。</b></p>
     </div>`;
 }
 
+/* 全形轉半形（避免輸入法切成全形時查不到資料） */
+function toHalfWidth(str) {
+  return String(str)
+    .replace(/[\uFF01-\uFF5E]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+    .replace(/\u3000/g, ' ');
+}
+
+let isLookingUp = false;
+
 async function doLookup() {
-  const floor = document.getElementById('input-floor').value.trim();
-  const row   = document.getElementById('input-row').value.trim();
-  const num   = document.getElementById('input-num').value.trim();
+  if (isLookingUp) return; // 防止重複點擊造成多次查詢
+
+  const floorEl = document.getElementById('input-floor');
+  const rowEl   = document.getElementById('input-row');
+  const numEl   = document.getElementById('input-num');
+  const floor = toHalfWidth(floorEl.value).trim();
+  const row   = toHalfWidth(rowEl.value).trim();
+  const num   = toHalfWidth(numEl.value).trim();
   const area  = document.getElementById('result-area');
+  const btn   = document.getElementById('lookup-btn');
 
   if (!selectedSession) {
     area.innerHTML = '<div class="error-box">請先選擇場次</div>';
@@ -395,18 +413,62 @@ async function doLookup() {
     area.innerHTML = '<div class="error-box">請輸入完整的樓、排、號資訊</div>';
     return;
   }
+
+  isLookingUp = true;
+  btn.disabled = true;
   area.innerHTML = '<div class="loading-box"><div class="spinner"></div>查詢中⋯</div>';
   try {
     const res = await callApi({ action: 'lookupBySeat', tab: selectedSession.tabName, floor, row, num });
     if (res.success) {
       area.innerHTML = resultHTML(res);
     } else {
-      area.innerHTML = '<div class="error-box"></div>';
-      area.querySelector('.error-box').textContent = res.message;
+      area.innerHTML = `
+        <div class="error-box">${escapeHtml(res.message)}</div>
+        <div class="reminder-box">
+          <p class="reminder-text">請確認輸入是否正確：樓層／號碼僅需數字；排數如含英文字母請一併輸入（例如 <b>12A</b>）。</p>
+        </div>`;
     }
   } catch (e) {
     area.innerHTML = '<div class="error-box">連線失敗，請確認網路後再試</div>';
+  } finally {
+    isLookingUp = false;
+    btn.disabled = false;
   }
+}
+
+/* 座位輸入框：全形轉半形、自動跳格、Enter送出、Backspace跳回上一格 */
+function setupSeatInputs() {
+  const order = ['input-floor', 'input-row', 'input-num'];
+  // type=number 的 input 不會遵守 maxlength 屬性，這裡改用自訂長度上限來判斷何時跳下一欄
+  const maxLen = { 'input-floor': 2, 'input-row': 3, 'input-num': 3 };
+
+  order.forEach((id, idx) => {
+    const el = document.getElementById(id);
+
+    el.addEventListener('input', () => {
+      let normalized = toHalfWidth(el.value);
+      if (normalized.length > maxLen[id]) normalized = normalized.slice(0, maxLen[id]);
+      if (normalized !== el.value) el.value = normalized;
+
+      // 到達該欄位長度上限時，自動跳到下一欄
+      if (el.value.length >= maxLen[id] && idx < order.length - 1) {
+        document.getElementById(order[idx + 1]).focus();
+      }
+    });
+
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        doLookup();
+        return;
+      }
+      // 欄位為空時按 Backspace，跳回上一欄
+      if (e.key === 'Backspace' && el.value === '' && idx > 0) {
+        const prev = document.getElementById(order[idx - 1]);
+        prev.focus();
+      }
+    });
+  });
 }
 
 function escapeHtml(str) {
@@ -415,6 +477,7 @@ function escapeHtml(str) {
   }[c]));
 }
 
+setupSeatInputs();
 loadShows();
 </script>
 </body>
