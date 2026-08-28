@@ -384,11 +384,11 @@ function resultHTML(res) {
     </div>`;
 }
 
-/* 全形轉半形（避免輸入法切成全形時查不到資料） */
+/* 全形轉半形（避免輸入法切成全形時查不到資料），並移除任何空白（含全形空白） */
 function toHalfWidth(str) {
   return String(str)
     .replace(/[\uFF01-\uFF5E]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
-    .replace(/\u3000/g, ' ');
+    .replace(/[\u3000\s]/g, '');
 }
 
 let isLookingUp = false;
